@@ -1,11 +1,11 @@
 import { streamText } from "ai"
-import { openai } from "@ai-sdk/openai"
+import { azure } from "@/lib/ai"
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
 
   const result = await streamText({
-    model: openai("gpt-4o"),
+    model: azure(process.env.AZURE_OPENAI_DEPLOYMENT || "gpt-4o"),
     system: `Você é a IA Precast, um assistente especializado em gestão municipal para a cidade de São Paulo. 
 
 Você tem acesso a dados em tempo real sobre:

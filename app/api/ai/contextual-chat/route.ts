@@ -1,5 +1,5 @@
 import { streamText } from "ai"
-import { openai } from "@ai-sdk/openai"
+import { azure } from "@/lib/ai"
 
 export async function POST(req: Request) {
   const { messages, context } = await req.json()
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   }
 
   const result = await streamText({
-    model: openai("gpt-4"),
+    model: azure(process.env.AZURE_OPENAI_DEPLOYMENT || "gpt-4o"),
     system: getSystemPrompt(context),
     messages,
   })

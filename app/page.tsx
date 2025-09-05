@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { ContextualAIChat } from "@/components/contextual-ai-chat"
 import { AIInsightTooltip } from "@/components/ai-insight-tooltip"
+import { query } from "@/lib/db"
 import { AIAnalysisReport } from "@/components/ai-analysis-report"
 
 import {
@@ -52,7 +53,27 @@ const alerts = [
   },
 ]
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  // Example: compute KPIs from DB if available; fallback to mock
+  // Read live KPIs from DB seed (fallback to defaults)
+  const kpis = { population: 12_400_000, qualityIndex: 8.2, alertsActive: 12, efficiency: 0.87 }
+  try {
+    const latest = async (id: number) =>
+      (
+        await query<{ value_num: string }>(
+          `SELECT value_num::text FROM indicator_results WHERE indicator_id=$1 AND nivel='MUN' AND regiao_name='São Paulo' ORDER BY periodo DESC LIMIT 1`,
+          [id]
+        )
+      ).rows?.[0]?.value_num
+    const pop = Number((await latest(1000)) || 12.4) * 1_000_000
+    const idx = Number((await latest(1001)) || 8.2)
+    const alr = Number((await latest(1002)) || 12)
+    const eff = Number((await latest(1003)) || 0.87)
+    kpis.population = isNaN(pop) ? kpis.population : pop
+    kpis.qualityIndex = isNaN(idx) ? kpis.qualityIndex : idx
+    kpis.alertsActive = isNaN(alr) ? kpis.alertsActive : alr
+    kpis.efficiency = isNaN(eff) ? kpis.efficiency : eff
+  } catch {}
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-primary border-b shadow-sm">
@@ -164,7 +185,7 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">12.4M</div>
+                  <div className="text-2xl font-bold">{(kpis.population / 1_000_000).toFixed(1)}M</div>
                   <p className="text-xs text-muted-foreground">+0.8% vs ano anterior</p>
                 </CardContent>
               </Card>
@@ -180,7 +201,7 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">8.2</div>
+                  <div className="text-2xl font-bold">{kpis.qualityIndex}</div>
                   <p className="text-xs text-muted-foreground">+0.3 pontos este mês</p>
                 </CardContent>
               </Card>
@@ -196,7 +217,7 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">12</div>
+                  <div className="text-2xl font-bold">{kpis.alertsActive}</div>
                   <p className="text-xs text-muted-foreground">3 críticos, 9 médios</p>
                 </CardContent>
               </Card>
@@ -212,7 +233,7 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">87%</div>
+                  <div className="text-2xl font-bold">{Math.round(kpis.efficiency * 100)}%</div>
                   <p className="text-xs text-muted-foreground">+2% vs mês anterior</p>
                 </CardContent>
               </Card>

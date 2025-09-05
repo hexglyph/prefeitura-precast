@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
@@ -100,6 +101,8 @@ const aiMetrics = [
 ]
 
 export default function AIPage() {
+  const [generating, setGenerating] = useState(false)
+  const [generated, setGenerated] = useState<string | null>(null)
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
@@ -156,13 +159,43 @@ export default function AIPage() {
                 <h2 className="text-2xl font-bold">Insights da IA</h2>
                 <p className="text-muted-foreground">Padrões e recomendações identificados automaticamente</p>
               </div>
-              <Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    setGenerating(true)
+                    setGenerated(null)
+                    const res = await fetch("/api/insights", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ scope: "geral", input: { metrics: aiMetrics } }),
+                    })
+                    const data = await res.json()
+                    setGenerated(data.output || "")
+                  } catch (e) {
+                    setGenerated("Falha ao gerar relatório.")
+                  } finally {
+                    setGenerating(false)
+                  }
+                }}
+                disabled={generating}
+              >
                 <TrendingUp className="h-4 w-4 mr-2" />
-                Gerar Relatório
+                {generating ? "Gerando..." : "Gerar Relatório"}
               </Button>
             </div>
 
             <div className="grid gap-6">
+              {generated && (
+                <Card className="border-blue-200">
+                  <CardHeader>
+                    <CardTitle>Insight Gerado</CardTitle>
+                    <CardDescription>Produzido pela Azure OpenAI</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <pre className="whitespace-pre-wrap text-sm">{generated}</pre>
+                  </CardContent>
+                </Card>
+              )}
               {aiInsights.map((insight) => (
                 <Card key={insight.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>

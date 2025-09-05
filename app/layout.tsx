@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Playfair_Display } from "next/font/google"
 import { Source_Sans_3 as Source_Sans_Pro } from "next/font/google"
 import "./globals.css"
+import { HeaderChat } from "@/components/header-chat"
 
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
@@ -32,7 +33,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${playfairDisplay.variable} ${sourceSansPro.variable} antialiased`}>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        <div className="sticky top-0 z-50 bg-primary border-b">
+          <div className="container mx-auto px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/images/brasao-sp.png" alt="Prefeitura" className="h-8 w-8" />
+              <span className="text-primary-foreground font-semibold">Prefeitura Precast</span>
+            </div>
+            <div>
+              {/* Global Chat in Header */}
+              {/* @ts-expect-error Client Component in Server Layout */}
+              <HeaderChat />
+            </div>
+          </div>
+        </div>
+        {children}
+      </body>
     </html>
   )
 }

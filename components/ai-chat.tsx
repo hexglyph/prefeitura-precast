@@ -1,6 +1,6 @@
 "use client"
 
-import { useChat } from "ai/react"
+import { useChat } from "@ai-sdk/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -68,13 +68,13 @@ export function AIChat() {
 
       <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t">
         <Input
-          value={input}
+          value={input ?? ""}
           onChange={handleInputChange}
           placeholder="Digite sua pergunta sobre a cidade..."
           disabled={isLoading}
           className="flex-1"
         />
-        <Button type="submit" disabled={isLoading || !input.trim()}>
+        <Button type="submit" disabled={isLoading || !(input ?? "").trim()}>
           <Send className="h-4 w-4" />
         </Button>
       </form>

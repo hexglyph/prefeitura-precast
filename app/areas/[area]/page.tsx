@@ -5,7 +5,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Shield, ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, MapPin, Target } from "lucide-react"
+import { ForecastChart } from "@/components/forecast-chart"
 import Link from "next/link"
+import { getIndicatorStats } from "@/lib/stats"
 import { ContextualAIChat } from "@/components/contextual-ai-chat"
 import { AIInsightTooltip } from "@/components/ai-insight-tooltip"
 import { AIAnalysisReport } from "@/components/ai-analysis-report"
@@ -44,9 +46,12 @@ const areaData = {
   },
 }
 
-export default function AreaDashboard({ params }: { params: { area: string } }) {
+export default async function AreaDashboard({ params }: { params: { area: string } }) {
   const area = areaData.seguranca // In real app, would select based on params.area
   const Icon = area.icon
+  // Example stats from DB for demonstration; map to area KPIs as needed
+  const alertsStats = await getIndicatorStats(1002, "MUN", "São Paulo")
+  const effStats = await getIndicatorStats(1003, "MUN", "São Paulo")
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,7 +139,7 @@ export default function AreaDashboard({ params }: { params: { area: string } }) 
           <TabsContent value="overview" className="space-y-6">
             {/* KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {area.kpis.map((kpi, index) => (
+              {[{ label: "Alertas Ativos", value: String(alertsStats.latest ?? area.kpis[2].value), change: alertsStats.change ? `${(alertsStats.change*100).toFixed(1)}%` : area.kpis[2].change, trend: alertsStats.change && alertsStats.change>0 ? "up" : "down" }, { label: "Eficiência", value: `${Math.round((effStats.latest ?? 0.87)*100)}%`, change: effStats.change ? `${(effStats.change*100).toFixed(1)}%` : area.kpis[3].change, trend: effStats.change && effStats.change>0 ? "up" : "down" }, ...area.kpis.filter((_,i)=> i<2)].map((kpi, index) => (
                 <Card key={index} className="relative">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -173,10 +178,10 @@ export default function AreaDashboard({ params }: { params: { area: string } }) 
                   </CardContent>
                 </Card>
               ))}
-            </div>
+          </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -242,8 +247,11 @@ export default function AreaDashboard({ params }: { params: { area: string } }) 
                   </ChartContainer>
                 </CardContent>
               </Card>
-            </div>
-          </TabsContent>
+          </div>
+
+          {/* Forecast using real ObservaSampa indicator (ex.: 215 Taxa de desemprego) */}
+          <ForecastChart indicatorId={215} nivel="MUN" regiao="São Paulo" title="Previsão de Indicador da Área" />
+        </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
             <Card>

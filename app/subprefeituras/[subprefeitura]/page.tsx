@@ -21,9 +21,11 @@ import {
   Phone,
 } from "lucide-react"
 import Link from "next/link"
+import { getIndicatorStats } from "@/lib/stats"
 import { ContextualAIChat } from "@/components/contextual-ai-chat"
 import { AIInsightTooltip } from "@/components/ai-insight-tooltip"
 import { AIAnalysisReport } from "@/components/ai-analysis-report"
+import { ForecastChart } from "@/components/forecast-chart"
 
 // Mock data - in real app this would come from API based on subprefeitura param
 const subprefeiturasData = {
@@ -70,8 +72,9 @@ const subprefeiturasData = {
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
 
-export default function SubprefeituraDashboard({ params }: { params: { subprefeitura: string } }) {
+export default async function SubprefeituraDashboard({ params }: { params: { subprefeitura: string } }) {
   const sub = subprefeiturasData.centro // In real app, would select based on params.subprefeitura
+  const effStats = await getIndicatorStats(1003, "MUN", "São Paulo")
 
   return (
     <div className="min-h-screen bg-background">
@@ -233,11 +236,14 @@ export default function SubprefeituraDashboard({ params }: { params: { subprefei
                   <TrendingUp className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{sub.performance}%</div>
-                  <p className="text-xs text-green-600">+2% vs mês anterior</p>
+                  <div className="text-2xl font-bold">{Math.round((effStats.latest ?? (sub.performance/100))*100)}%</div>
+                  <p className="text-xs text-green-600">{effStats.change ? `${(effStats.change*100).toFixed(1)}%` : "+2%"} vs mês anterior</p>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Forecast for a municipal indicator displayed for the region context (e.g., 215 unemployment rate) */}
+            <ForecastChart indicatorId={215} nivel="MUN" regiao="São Paulo" title="Previsão Municipal" />
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
