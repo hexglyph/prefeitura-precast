@@ -152,7 +152,7 @@ export default function AreaConfigPage({ params }: { params: { area: string } })
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <Input type="number" value={metric.value} className="w-24" />
+                      <Input type="number" value={metric.value} readOnly className="w-24" />
                       <span className="text-sm text-muted-foreground">{metric.unit}</span>
                     </div>
                     <div className="flex items-center space-x-2">

@@ -45,4 +45,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "ingest_all_failed" }, { status: 500 })
   }
 }
-

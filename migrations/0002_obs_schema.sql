@@ -21,4 +21,3 @@ CREATE TABLE IF NOT EXISTS indicator_results (
 
 CREATE INDEX IF NOT EXISTS idx_indicator_results_lookup
   ON indicator_results (indicator_id, nivel, regiao_name, periodo);
-

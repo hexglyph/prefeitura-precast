@@ -5,6 +5,8 @@ import { AIChat } from "@/components/ai-chat"
 import { Button } from "@/components/ui/button"
 import { MessageSquare } from "lucide-react"
 
+const hexglyphHref = "https://hexglyph.com"
+
 export function HeaderChat() {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -23,7 +25,7 @@ export function HeaderChat() {
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <Button size="sm" variant="secondary" onClick={() => setOpen(true)} aria-expanded={open}>
           <MessageSquare className="h-4 w-4 mr-1" /> IA Precast
         </Button>
@@ -53,4 +55,3 @@ export function HeaderChat() {
     </div>
   )
 }
-

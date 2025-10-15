@@ -1,4 +1,4 @@
-import { query } from "@/lib/db"
+import { databaseAvailable, query } from "@/lib/db"
 
 export type IndicatorStats = {
   latest?: number
@@ -9,6 +9,11 @@ export type IndicatorStats = {
 }
 
 export async function getIndicatorStats(indicatorId: number, nivel: string, regiaoName?: string): Promise<IndicatorStats> {
+  if (!databaseAvailable()) {
+    console.warn("Banco indisponível ao carregar estatísticas do indicador.")
+    return { count: 0 }
+  }
+
   const { rows } = await query<{ periodo: string; value_num: string }>(
     `SELECT periodo, value_num::text FROM indicator_results
      WHERE indicator_id=$1 AND nivel=$2 AND ($3::text IS NULL OR regiao_name=$3)
@@ -28,6 +33,11 @@ export async function getIndicatorStats(indicatorId: number, nivel: string, regi
 }
 
 export async function getIndicatorSeries(indicatorId: number, nivel: string, regiaoName?: string) {
+  if (!databaseAvailable()) {
+    console.warn("Banco indisponível ao carregar série do indicador.")
+    return []
+  }
+
   const { rows } = await query<{ periodo: string; value_num: string }>(
     `SELECT periodo, value_num::text FROM indicator_results
      WHERE indicator_id=$1 AND nivel=$2 AND ($3::text IS NULL OR regiao_name=$3)
@@ -36,4 +46,3 @@ export async function getIndicatorSeries(indicatorId: number, nivel: string, reg
   )
   return rows.map((r) => ({ period: r.periodo, value: Number(r.value_num) }))
 }
-

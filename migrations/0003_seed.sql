@@ -47,4 +47,3 @@ ON CONFLICT DO NOTHING;
 INSERT INTO insights (scope, input, output, metadata)
 VALUES
   ('geral', '{"seed":true}', 'Município apresentou melhora gradual na eficiência e estabilidade no índice de qualidade. Recomenda-se manter políticas que reduziram o tempo de resposta e reforçar regiões com maior concentração de incidentes.', '{"seed":true}');
-

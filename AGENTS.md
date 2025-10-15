@@ -39,4 +39,3 @@
 - Use `.env.local` for secrets; never commit env files. Likely keys: `OPENAI_API_KEY`, analytics tokens.
 - Configure environment variables in Vercel for deployments.
 - Avoid hardcoding URLs/keys; read from `process.env.*` and validate in `lib/`.
-

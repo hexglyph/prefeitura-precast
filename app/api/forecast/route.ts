@@ -30,4 +30,3 @@ export async function GET(req: Request) {
   const { fitted, forecast } = simpleExponentialSmoothing(points)
   return NextResponse.json({ count: points.length, fitted, forecast })
 }
-
