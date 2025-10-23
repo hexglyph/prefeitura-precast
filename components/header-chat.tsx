@@ -5,8 +5,6 @@ import { AIChat } from "@/components/ai-chat"
 import { Button } from "@/components/ui/button"
 import { MessageSquare } from "lucide-react"
 
-const hexglyphHref = "https://hexglyph.com"
-
 export function HeaderChat() {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
